@@ -10,6 +10,7 @@ import tkinter.font as tkfont
 from ..data.pokemon_data import POKEMON_DATA
 from ..utils.type_calculator import analyze_matchup
 from ..utils.music_manager import MusicManager
+from ..utils.move_recommender import recommend_moves, analyze_move_coverage
 
 
 class PokemonOpponentApp:
@@ -32,7 +33,7 @@ class PokemonOpponentApp:
     def _setup_window(self):
         """Configure the main application window."""
         self.master.title("Pokémon Opponent Recommender")
-        self.master.geometry("750x780")
+        self.master.geometry("900x1000")  # Increased size for move recommendations
         self.master.resizable(True, True)
         self.master.configure(bg="#2a4d69")
         
@@ -51,6 +52,7 @@ class PokemonOpponentApp:
         self.master.rowconfigure(0, weight=0)  # Title
         self.master.rowconfigure(1, weight=0)  # Controls
         self.master.rowconfigure(2, weight=1)  # Results area
+        self.master.rowconfigure(3, weight=1)  # Move recommendations area
     
     def _setup_fonts(self):
         """Configure custom fonts for the application."""
@@ -84,6 +86,9 @@ class PokemonOpponentApp:
         
         # Results Frame
         self._create_results_frame()
+        
+        # Move Recommendations Frame
+        self._create_move_recommendations_frame()
     
     def _create_control_frame(self):
         """Create the control frame with user inputs."""
@@ -203,7 +208,7 @@ class PokemonOpponentApp:
             results_frame, 
             wrap=tk.WORD, 
             width=60, 
-            height=15,
+            height=12,  # Reduced height to make room for move recommendations
             font=self.text_area_font, 
             bg="white", 
             fg="#343a40",
@@ -215,10 +220,51 @@ class PokemonOpponentApp:
         self.results_text_area.grid(row=1, column=0, sticky="nsew")
         self.results_text_area.config(state=tk.DISABLED)
     
+    def _create_move_recommendations_frame(self):
+        """Create the move recommendations display frame."""
+        move_frame = tk.Frame(
+            self.master, 
+            bg="#e8f4f8", 
+            bd=4, 
+            relief=tk.SUNKEN, 
+            padx=20, 
+            pady=15
+        )
+        move_frame.grid(row=3, column=0, pady=10, padx=20, sticky="nsew")
+        move_frame.columnconfigure(0, weight=1)
+        move_frame.rowconfigure(1, weight=1)
+        
+        tk.Label(
+            move_frame, 
+            text="Move Recommendations:", 
+            font=self.header_font, 
+            fg="#2a4d69", 
+            bg="#e8f4f8"
+        ).grid(row=0, column=0, pady=(5, 10))
+        
+        self.move_text_area = scrolledtext.ScrolledText(
+            move_frame, 
+            wrap=tk.WORD, 
+            width=60, 
+            height=10,
+            font=self.text_area_font, 
+            bg="white", 
+            fg="#343a40",
+            relief=tk.FLAT, 
+            bd=0, 
+            padx=10, 
+            pady=10
+        )
+        self.move_text_area.grid(row=1, column=0, sticky="nsew")
+        self.move_text_area.config(state=tk.DISABLED)
+    
     def _analyze_matchup(self):
         """Analyze the matchup between selected Pokémon."""
         self.results_text_area.config(state=tk.NORMAL)
         self.results_text_area.delete(1.0, tk.END)
+        
+        self.move_text_area.config(state=tk.NORMAL)
+        self.move_text_area.delete(1.0, tk.END)
         
         your_pokemon_name = self.your_pokemon_var.get()
         opponent_pokemon_name = self.opponent_pokemon_var.get()
@@ -227,14 +273,17 @@ class PokemonOpponentApp:
         if your_pokemon_name == "Select Pokémon":
             messagebox.showwarning("Input Error", "Please select Your Pokémon!")
             self.results_text_area.config(state=tk.DISABLED)
+            self.move_text_area.config(state=tk.DISABLED)
             return
         if opponent_pokemon_name == "Select Pokémon":
             messagebox.showwarning("Input Error", "Please select a Target Opponent Pokémon!")
             self.results_text_area.config(state=tk.DISABLED)
+            self.move_text_area.config(state=tk.DISABLED)
             return
         if your_pokemon_name == opponent_pokemon_name:
             messagebox.showwarning("Input Error", "Your Pokémon and the Target Opponent cannot be the same!")
             self.results_text_area.config(state=tk.DISABLED)
+            self.move_text_area.config(state=tk.DISABLED)
             return
         
         # Analyze matchup
@@ -243,16 +292,24 @@ class PokemonOpponentApp:
         if analysis is None:
             messagebox.showerror("Data Error", "Could not find type data for selected Pokémon. Please try again.")
             self.results_text_area.config(state=tk.DISABLED)
+            self.move_text_area.config(state=tk.DISABLED)
             return
+        
+        # Get move recommendations
+        move_recommendations = recommend_moves(your_pokemon_name, opponent_pokemon_name, POKEMON_DATA)
         
         # Play battle sound during analysis
         self._play_battle_sound()
         
         # Generate output
         output_text = self._format_analysis_output(analysis)
+        move_output_text = self._format_move_recommendations(move_recommendations)
         
         self.results_text_area.insert(tk.END, output_text)
         self.results_text_area.config(state=tk.DISABLED)
+        
+        self.move_text_area.insert(tk.END, move_output_text)
+        self.move_text_area.config(state=tk.DISABLED)
     
     def _format_analysis_output(self, analysis):
         """Format the analysis results for display."""
@@ -278,6 +335,43 @@ class PokemonOpponentApp:
         # Overall Matchup Summary
         output_text += "--- ⭐ Overall Matchup Summary ⭐ ---\n"
         output_text += f"{analysis['matchup_summary']}\n"
+        
+        return output_text
+    
+    def _format_move_recommendations(self, move_recommendations):
+        """Format the move recommendations for display."""
+        if not move_recommendations or not move_recommendations.get('recommendations'):
+            return "No move recommendations available for this Pokémon.\n"
+        
+        output_text = f"--- 🎯 Move Recommendations for {move_recommendations['pokemon']} vs {move_recommendations['opponent']} ---\n\n"
+        
+        # Top recommended moves
+        output_text += "🏆 TOP RECOMMENDED MOVES:\n"
+        for i, move in enumerate(move_recommendations['recommendations'], 1):
+            effectiveness_emoji = "✅" if move['effectiveness'] > 1.0 else "⚠️" if move['effectiveness'] < 1.0 else "🟡"
+            output_text += f"{i}. {effectiveness_emoji} {move['name']} ({move['type']})\n"
+            output_text += f"   Power: {move['power']} | Accuracy: {move['accuracy']}% | Category: {move['category']}\n"
+            output_text += f"   Effectiveness: {move['effectiveness']:.1f}x | Score: {move['score']:.0f}\n"
+            output_text += f"   {move['recommendation']}\n"
+            output_text += f"   Description: {move['description']}\n\n"
+        
+        # Strategy tips
+        if move_recommendations.get('strategy_tips'):
+            output_text += "💡 STRATEGY TIPS:\n"
+            for tip in move_recommendations['strategy_tips']:
+                output_text += f"• {tip}\n"
+            output_text += "\n"
+        
+        # Move coverage analysis
+        coverage_analysis = analyze_move_coverage(move_recommendations['pokemon'], POKEMON_DATA)
+        if coverage_analysis and coverage_analysis.get('coverage_quality'):
+            output_text += f"📊 MOVE COVERAGE ANALYSIS:\n"
+            output_text += f"• Coverage Quality: {coverage_analysis['coverage_quality']}\n"
+            output_text += f"• Unique Move Types: {coverage_analysis['unique_types']} ({', '.join(coverage_analysis['move_types'])})\n"
+            output_text += f"• Physical Moves: {coverage_analysis['physical_moves']} | Special Moves: {coverage_analysis['special_moves']}\n"
+            if coverage_analysis.get('recommendation'):
+                output_text += f"• Recommendations: {'; '.join(coverage_analysis['recommendation'])}\n"
+            output_text += "\n"
         
         return output_text
     
