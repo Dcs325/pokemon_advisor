@@ -8,7 +8,7 @@ A desktop application that helps you find the best Pokémon to use against a spe
 
 - **Matchup Analysis:** Select your Pokémon and an opponent to see a detailed breakdown of offensive and defensive type advantages.
 - **Extensive Pokémon Database:** Includes Pokémon from multiple generations.
-- **Battle Theme Music:** Plays classic Pokémon battle music during analysis (requires `pygame`).
+- **Battle Sound Effects:** Plays classic Pokémon battle music during analysis (requires `pygame` and music file).
 - **User-Friendly Interface:** Built with Tkinter for a simple and intuitive experience.
 - **Modular Architecture:** Clean, maintainable code structure with separated concerns.
 
@@ -20,6 +20,7 @@ pokemon_advisor/
 ├── app.py                  # Original monolithic file (legacy)
 ├── requirements.txt        # Python dependencies
 ├── README.md              # This file
+├── pokemon_battle_theme.mp3 # Battle music file (optional)
 └── src/                   # Source code directory
     ├── __init__.py
     ├── data/              # Data layer
@@ -47,9 +48,24 @@ git clone https://github.com/Dcs325/pokemon_advisor.git
 cd pokemon_advisor
 ```
 
-### 2. Install Dependencies
+### 2. Set Up Virtual Environment (Recommended)
 
-This project uses `pygame` for music playback. Install it using the `requirements.txt` file:
+Due to system package management restrictions, it's recommended to use a virtual environment:
+
+```bash
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+# On macOS/Linux:
+source venv/bin/activate
+# On Windows:
+# venv\Scripts\activate
+```
+
+### 3. Install Dependencies
+
+This project uses `pygame` for battle sound effects. Install it using the `requirements.txt` file:
 
 ```bash
 pip install -r requirements.txt
@@ -57,11 +73,15 @@ pip install -r requirements.txt
 
 > **Note:** The application also requires `tkinter`, which is included in most standard Python installations. If you get an error about `tkinter` not being found, you may need to install it separately (e.g., `sudo apt-get install python3-tk` on Debian/Ubuntu).
 
-### 3. Add the Music File (Optional)
+### 4. Add the Music File (Optional)
 
-For the "Play Battle Theme" button to work, you need to add a music file named `pokemon_battle_theme.mp3` to the main project folder.
+For the battle sound effects to work, you need to add a music file named `pokemon_battle_theme.mp3` to the main project folder.
 
-### 4. Run the Application
+**If you don't have the music file:**
+- The application will still work perfectly without it
+- You'll just miss the battle sound effects during analysis
+
+### 5. Run the Application
 
 Once the dependencies are installed, you can run the app with the following command:
 
@@ -69,7 +89,14 @@ Once the dependencies are installed, you can run the app with the following comm
 python3 main.py
 ```
 
-Now you can select your Pokémon and an opponent to get an instant matchup analysis!
+Now you can select your Pokémon and an opponent to get an instant matchup analysis with battle sounds! 🎵
+
+## Battle Sound Features
+
+- **Automatic Playback:** Battle music starts automatically when you click "Analyze Matchup"
+- **5-Second Duration:** Music plays for exactly 5 seconds then stops automatically
+- **No Manual Controls:** Seamless integration with the analysis workflow
+- **Graceful Fallback:** App works perfectly even without the music file
 
 ## Development
 
@@ -96,6 +123,17 @@ This modular structure makes the code:
 - **Extensible**: New features can be added without modifying existing code
 - **Readable**: Clear separation of concerns makes the code easier to understand
 
+### Troubleshooting
+
+**No Battle Sounds:**
+- Make sure `pokemon_battle_theme.mp3` is in the project root folder
+- Ensure pygame is installed: `pip install pygame`
+- Check that your system volume is not muted
+
+**Pygame Installation Issues:**
+- Use a virtual environment to avoid system package conflicts
+- On macOS, you might need to use `brew install pygame` as an alternative
+
 ## Contributing
 
 Feel free to contribute to this project by:
@@ -104,3 +142,4 @@ Feel free to contribute to this project by:
 - Enhancing the user interface
 - Adding new features like move recommendations
 - Writing tests for the modular components
+- Suggesting new battle sound effects
