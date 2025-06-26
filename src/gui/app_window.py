@@ -9,6 +9,7 @@ import tkinter.font as tkfont
 
 from ..data.pokemon_data import POKEMON_DATA
 from ..utils.type_calculator import analyze_matchup
+from ..utils.music_manager import MusicManager
 
 
 class PokemonOpponentApp:
@@ -22,6 +23,7 @@ class PokemonOpponentApp:
             master: The root Tkinter window
         """
         self.master = master
+        self.music_manager = MusicManager()
         
         self._setup_window()
         self._setup_fonts()
@@ -258,6 +260,9 @@ class PokemonOpponentApp:
             self.results_text_area.config(state=tk.DISABLED)
             return
         
+        # Play battle sound during analysis
+        self._play_battle_sound()
+        
         # Generate output
         output_text = self._format_analysis_output(analysis)
         
@@ -300,3 +305,13 @@ class PokemonOpponentApp:
         pokemon_names_sorted = sorted(list(POKEMON_DATA.keys()))
         self.your_pokemon_var.set(pokemon_names_sorted[0])
         self.opponent_pokemon_var.set(pokemon_names_sorted[0]) 
+
+    def _play_battle_sound(self):
+        """Play a battle sound during the analysis."""
+        if self.music_manager.play_music():
+            # Schedule the music to stop after 5 seconds
+            self.master.after(5000, self._stop_battle_sound)
+    
+    def _stop_battle_sound(self):
+        """Stop the battle sound."""
+        self.music_manager.stop_music() 
