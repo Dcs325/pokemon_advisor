@@ -214,21 +214,6 @@ class PokemonOpponentApp:
         )
         self.results_text_area.grid(row=1, column=0, sticky="nsew")
         self.results_text_area.config(state=tk.DISABLED)
-        
-        # Clear Button
-        clear_button = tk.Button(
-            results_frame, 
-            text="Clear Results", 
-            command=self._clear_results,
-            font=self.button_font, 
-            bg="#6c757d", 
-            fg="black",
-            relief=tk.RAISED, 
-            bd=3, 
-            padx=15, 
-            pady=8
-        )
-        clear_button.grid(row=2, column=0, pady=15)
     
     def _analyze_matchup(self):
         """Analyze the matchup between selected Pokémon."""
@@ -296,16 +281,6 @@ class PokemonOpponentApp:
         
         return output_text
     
-    def _clear_results(self):
-        """Clear the results text area and reset selections."""
-        self.results_text_area.config(state=tk.NORMAL)
-        self.results_text_area.delete(1.0, tk.END)
-        self.results_text_area.config(state=tk.DISABLED)
-        
-        pokemon_names_sorted = sorted(list(POKEMON_DATA.keys()))
-        self.your_pokemon_var.set(pokemon_names_sorted[0])
-        self.opponent_pokemon_var.set(pokemon_names_sorted[0]) 
-
     def _play_battle_sound(self):
         """Play a battle sound during the analysis."""
         if self.music_manager.play_music():
