@@ -88,7 +88,7 @@ class TeamBuilderWindow:
             parent,
             text="Team Management",
             font=self.header_font,
-            fg="white",
+            fg="black",
             bg="#396c8d",
             bd=3,
             relief=tk.RAISED
@@ -104,7 +104,7 @@ class TeamBuilderWindow:
             text="Add Pokémon:",
             font=self.label_font,
             bg="#396c8d",
-            fg="white"
+            fg="black"
         ).pack(anchor=tk.W)
         
         # Pokémon dropdown
@@ -128,7 +128,7 @@ class TeamBuilderWindow:
             command=self._add_pokemon,
             font=self.button_font,
             bg="#28a745",
-            fg="white",
+            fg="black",
             relief=tk.RAISED,
             bd=2
         )
@@ -143,7 +143,7 @@ class TeamBuilderWindow:
             text="Current Team:",
             font=self.header_font,
             bg="#396c8d",
-            fg="white"
+            fg="black"
         ).pack(anchor=tk.W)
         
         # Team listbox
@@ -151,7 +151,7 @@ class TeamBuilderWindow:
             team_display_frame,
             font=self.text_font,
             bg="white",
-            fg="#343a40",
+            fg="black",
             selectmode=tk.SINGLE,
             height=8
         )
@@ -167,7 +167,7 @@ class TeamBuilderWindow:
             command=self._remove_pokemon,
             font=self.button_font,
             bg="#dc3545",
-            fg="white",
+            fg="black",
             relief=tk.RAISED,
             bd=2
         )
@@ -179,7 +179,7 @@ class TeamBuilderWindow:
             command=self._clear_team,
             font=self.button_font,
             bg="#6c757d",
-            fg="white",
+            fg="black",
             relief=tk.RAISED,
             bd=2
         )
@@ -194,14 +194,14 @@ class TeamBuilderWindow:
             text="Suggestions:",
             font=self.header_font,
             bg="#396c8d",
-            fg="white"
+            fg="black"
         ).pack(anchor=tk.W)
         
         self.suggestions_text = scrolledtext.ScrolledText(
             suggestions_frame,
             font=self.text_font,
             bg="white",
-            fg="#343a40",
+            fg="black",
             height=4,
             wrap=tk.WORD
         )
@@ -213,7 +213,7 @@ class TeamBuilderWindow:
             command=self._get_suggestions,
             font=self.button_font,
             bg="#17a2b8",
-            fg="white",
+            fg="black",
             relief=tk.RAISED,
             bd=2
         )
@@ -225,7 +225,7 @@ class TeamBuilderWindow:
             parent,
             text="Team Analysis",
             font=self.header_font,
-            fg="white",
+            fg="black",
             bg="#396c8d",
             bd=3,
             relief=tk.RAISED
@@ -239,7 +239,7 @@ class TeamBuilderWindow:
             command=self._analyze_team,
             font=self.button_font,
             bg="#ffc107",
-            fg="#343a40",
+            fg="black",
             relief=tk.RAISED,
             bd=2
         )
@@ -250,7 +250,7 @@ class TeamBuilderWindow:
             analysis_frame,
             font=self.text_font,
             bg="white",
-            fg="#343a40",
+            fg="black",
             wrap=tk.WORD
         )
         self.analysis_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
