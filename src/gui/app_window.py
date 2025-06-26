@@ -9,7 +9,6 @@ import tkinter.font as tkfont
 
 from ..data.pokemon_data import POKEMON_DATA
 from ..utils.type_calculator import analyze_matchup
-from ..utils.music_manager import MusicManager
 
 
 class PokemonOpponentApp:
@@ -23,12 +22,10 @@ class PokemonOpponentApp:
             master: The root Tkinter window
         """
         self.master = master
-        self.music_manager = MusicManager()
         
         self._setup_window()
         self._setup_fonts()
         self._create_widgets()
-        self._setup_music_controls()
     
     def _setup_window(self):
         """Configure the main application window."""
@@ -231,70 +228,6 @@ class PokemonOpponentApp:
         )
         clear_button.grid(row=2, column=0, pady=15)
     
-    def _setup_music_controls(self):
-        """Setup music control buttons and status."""
-        # Music Controls Frame
-        music_frame = tk.Frame(self.master, bg="#2a4d69")
-        music_frame.grid(row=3, column=0, pady=(10, 0))
-        
-        self.play_music_button = tk.Button(
-            music_frame, 
-            text="▶ Play Battle Theme", 
-            command=self._play_music,
-            font=self.label_font, 
-            bg="#f5cd2d", 
-            fg="#333",
-            relief=tk.RAISED, 
-            bd=2, 
-            padx=10, 
-            pady=5,
-            state=tk.NORMAL if self.music_manager.is_available else tk.DISABLED
-        )
-        self.play_music_button.pack(side=tk.LEFT, padx=5)
-        
-        self.stop_music_button = tk.Button(
-            music_frame, 
-            text="■ Stop Battle Theme", 
-            command=self._stop_music,
-            font=self.label_font, 
-            bg="#e84a4a", 
-            fg="black",
-            relief=tk.RAISED, 
-            bd=2, 
-            padx=10, 
-            pady=5,
-            state=tk.DISABLED
-        )
-        self.stop_music_button.pack(side=tk.LEFT, padx=5)
-        
-        # Status Label
-        self.status_label = tk.Label(
-            self.master, 
-            text=self.music_manager.get_status(),
-            font=self.label_font, 
-            fg="#90ee90", 
-            bg="#2a4d69"
-        )
-        self.status_label.grid(row=4, column=0, pady=(5, 0), sticky="s")
-    
-    def _play_music(self):
-        """Play the battle theme music."""
-        if self.music_manager.play_music():
-            self.play_music_button.config(state=tk.DISABLED)
-            self.stop_music_button.config(state=tk.NORMAL)
-            self.status_label.config(text="Battle theme playing 🎶", fg="#90ee90")
-            # Schedule stop after 5 seconds
-            self.master.after(5000, self._stop_music)
-        else:
-            self.status_label.config(text="Error playing music.", fg="red")
-    
-    def _stop_music(self):
-        """Stop the currently playing music."""
-        if self.music_manager.stop_music():
-            self.play_music_button.config(state=tk.NORMAL)
-            self.stop_music_button.config(state=tk.DISABLED)
-            self.status_label.config(text="Battle theme stopped.", fg="gray")
-    
     def _analyze_matchup(self):
         """Analyze the matchup between selected Pokémon."""
         self.results_text_area.config(state=tk.NORMAL)
@@ -324,9 +257,6 @@ class PokemonOpponentApp:
             messagebox.showerror("Data Error", "Could not find type data for selected Pokémon. Please try again.")
             self.results_text_area.config(state=tk.DISABLED)
             return
-        
-        # Start music
-        self._play_music()
         
         # Generate output
         output_text = self._format_analysis_output(analysis)
@@ -369,7 +299,4 @@ class PokemonOpponentApp:
         
         pokemon_names_sorted = sorted(list(POKEMON_DATA.keys()))
         self.your_pokemon_var.set(pokemon_names_sorted[0])
-        self.opponent_pokemon_var.set(pokemon_names_sorted[0])
-        
-        if self.music_manager.is_playing():
-            self._stop_music() 
+        self.opponent_pokemon_var.set(pokemon_names_sorted[0]) 
