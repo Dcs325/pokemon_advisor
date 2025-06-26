@@ -195,7 +195,7 @@ class PokemonOpponentApp:
             command=self._open_team_builder,
             font=self.button_font,
             bg="#6f42c1",
-            fg="white",
+            fg="black",
             relief=tk.RAISED,
             bd=3,
             padx=20,
