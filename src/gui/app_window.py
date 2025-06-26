@@ -11,6 +11,7 @@ from ..data.pokemon_data import POKEMON_DATA
 from ..utils.type_calculator import analyze_matchup
 from ..utils.music_manager import MusicManager
 from ..utils.move_recommender import recommend_moves, analyze_move_coverage
+from .team_builder_window import TeamBuilderWindow
 
 
 class PokemonOpponentApp:
@@ -25,6 +26,7 @@ class PokemonOpponentApp:
         """
         self.master = master
         self.music_manager = MusicManager()
+        self.team_builder_window = None
         
         self._setup_window()
         self._setup_fonts()
@@ -167,9 +169,13 @@ class PokemonOpponentApp:
         )
         opponent_pokemon_menu.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
         
+        # Button Frame
+        button_frame = tk.Frame(control_frame, bg="#396c8d")
+        button_frame.grid(row=2, column=0, columnspan=2, pady=15)
+        
         # Analyze Button
         find_button = tk.Button(
-            control_frame, 
+            button_frame, 
             text="Analyze Matchup", 
             command=self._analyze_matchup,
             font=self.button_font, 
@@ -180,7 +186,22 @@ class PokemonOpponentApp:
             padx=20, 
             pady=10
         )
-        find_button.grid(row=2, column=0, columnspan=2, pady=15)
+        find_button.pack(side=tk.LEFT, padx=(0, 10))
+        
+        # Team Builder Button
+        team_builder_button = tk.Button(
+            button_frame,
+            text="Team Builder",
+            command=self._open_team_builder,
+            font=self.button_font,
+            bg="#6f42c1",
+            fg="white",
+            relief=tk.RAISED,
+            bd=3,
+            padx=20,
+            pady=10
+        )
+        team_builder_button.pack(side=tk.LEFT)
     
     def _create_results_frame(self):
         """Create the results display frame."""
@@ -383,4 +404,11 @@ class PokemonOpponentApp:
     
     def _stop_battle_sound(self):
         """Stop the battle sound."""
-        self.music_manager.stop_music() 
+        self.music_manager.stop_music()
+    
+    def _open_team_builder(self):
+        """Open the team builder window."""
+        if self.team_builder_window is None or not self.team_builder_window.window.winfo_exists():
+            self.team_builder_window = TeamBuilderWindow(self.master)
+        else:
+            self.team_builder_window.show() 
