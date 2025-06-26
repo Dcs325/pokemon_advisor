@@ -24,14 +24,6 @@ except ImportError:
     print("If you are on Linux, try: sudo apt-get install python3-tk")
     sys.exit(1)
 
-try:
-    import pygame
-    _pygame_available = True
-except ImportError:
-    _pygame_available = False
-    print("Warning: pygame is not available. Music functionality will be disabled.")
-    print("To install pygame: pip install pygame")
-
 # Import our modular components
 try:
     from src.gui.app_window import PokemonOpponentApp
