@@ -281,11 +281,12 @@ class PokemonOpponentApp:
     
     def _analyze_matchup(self):
         """Analyze the matchup between selected Pokémon."""
-        self.results_text_area.config(state=tk.NORMAL)
-        self.results_text_area.delete(1.0, tk.END)
-        
+        # Always clear move recommendations area first
         self.move_text_area.config(state=tk.NORMAL)
         self.move_text_area.delete(1.0, tk.END)
+        
+        self.results_text_area.config(state=tk.NORMAL)
+        self.results_text_area.delete(1.0, tk.END)
         
         your_pokemon_name = self.your_pokemon_var.get()
         opponent_pokemon_name = self.opponent_pokemon_var.get()
